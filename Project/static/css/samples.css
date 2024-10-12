@@ -1,0 +1,123 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+    height: 100%;
+    background-color: #111;
+    color: #fff;
+}
+
+#video-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
+}
+
+#video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: translate(-50%, -50%) scale(1);
+    transform-origin: center center;
+    transition: transform 0.3s ease;
+}
+
+#controls {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    width: 80%;
+    margin-bottom: 20px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 50%;
+    color: #ffd700;
+    background-color: #000;
+    margin: 5px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+}
+
+#menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    width: 300px;
+    height: 100%;
+    display: none;
+}
+
+#menu.active {
+    display: block;
+}
+
+#filter-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.scrollable {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.filter-btn {
+    padding: 10px;
+    margin: 5px;
+    background-color: #333;
+    color: #ffd700;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.filter-btn:hover {
+    background-color: #555;
+}
+
+.custom-filter {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #222;
+}
+
+.custom-filter h3 {
+    margin-bottom: 10px;
+}
+
+.custom-filter label {
+    display: block;
+    margin: 5px 0;
+}
+
+.custom-filter input {
+    width: 100%;
+    margin-bottom: 10px;
+}
