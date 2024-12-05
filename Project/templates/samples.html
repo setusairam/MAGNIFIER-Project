@@ -5,28 +5,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adjustable Webcam Access with Zoom</title>
-    <link rel="stylesheet" href="/Project/static/css/samples.css">
+    <link rel="stylesheet" href="../static/css/samples.css">
 </head>
 
 <body>
     <div id="video-container">
         <video id="video" autoplay playsinline></video>
         <div id="controls">
-            <button class="btn" onclick="zoomIn()">+</button>
-            <button class="btn" onclick="zoomOut()">-</button>
-            <button class="btn" onclick="toggleFullscreen()">Toggle Fullscreen</button>
+            <button class="btn" onclick="toggleFullscreen()">Fullscreen</button>
             <button class="btn" id="filter-button" onclick="toggleMenu()">Filters</button>
         </div>
+        <input type="range" id="zoom-slider" min="1" max="5" step="0.1" value="1" orient="vertical" onchange="adjustZoom()">
     </div>
 
-    <div id="menu">
+    <div id="menu" class="hidden">
         <div id="filter-list">
-            <!-- Predefined Filters -->
             <h3>Predefined Filters</h3>
             <div class="scrollable">
                 <button class="filter-btn" onclick="applyNormal()">Normal</button>
                 <button class="filter-btn" onclick="applyProtanopia()">Protanopia</button>
                 <button class="filter-btn" onclick="applyDeuteranopia()">Deuteranopia</button>
+                <button class="filter-btn" onclick="applyTritanopia()">Tritanopia</button>
                 <button class="filter-btn" onclick="applyLightBlue()">Light Blue</button>
                 <button class="filter-btn" onclick="applyLightGreen()">Light Green</button>
                 <button class="filter-btn" onclick="applyLightPink()">Light Pink</button>
@@ -38,11 +37,12 @@
                 <button class="filter-btn" onclick="applyBlueOnYellow()">Blue on Yellow</button>
                 <button class="filter-btn" onclick="applyNeonOrangeOnBlack()">Neon Orange on Black</button>
                 <button class="filter-btn" onclick="applyNeonGreenOnBlack()">Neon Green on Black</button>
+                <button class="filter-btn" onclick="applyYellowOnBlack()">Yellow on Black</button>
+                <button class="filter-btn" onclick="applyPurpleOnBlack()">Purple on Black</button>
             </div>
 
-            <!-- Custom Filter -->
             <div class="custom-filter">
-                <h3>Custom Color Filter</h3>
+                <h3>Adjustable Filters</h3>
                 <label for="hue">Hue</label>
                 <input type="range" id="hue" min="0" max="360" value="0" onchange="applyCustomFilter()">
                 <label for="brightness">Brightness</label>
@@ -55,7 +55,7 @@
         </div>
     </div>
 
-    <script src="/Project/static/js/samples.js"></script>
+    <script src="../static/js/samples.js"></script>
 </body>
 
 </html>
