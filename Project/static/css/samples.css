@@ -1,65 +1,85 @@
+/* Fullscreen adjustments and UI styling */
 body, html {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    box-sizing: border-box;
     height: 100%;
     background-color: #111;
     color: #fff;
 }
 
+#menu {
+    overflow: auto;
+    max-height: 100vh;
+}
+
+.video-container {
+    overflow: hidden;
+    position: relative;
+}
+
 #video-container {
     position: relative;
     width: 100%;
-    height: 100vh;
-    overflow: auto;
+    height: 100%;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: grab;
 }
 
+#video-container:active {
+    cursor: grabbing;
+}
+
 #video {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
     transform: translate(-50%, -50%) scale(1);
     transform-origin: center center;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
     transition: transform 0.3s ease;
 }
 
 #controls {
     position: absolute;
-    bottom: 0;
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    justify-content: center;
-    width: 80%;
-    margin-bottom: 20px;
     gap: 10px;
-    flex-wrap: wrap;
 }
 
 .btn {
-    padding: 15px;
-    font-size: 16px;
-    cursor: pointer;
+    padding: 15px 20px;
+    font-size: 18px;
     border: none;
-    border-radius: 50%;
+    border-radius: 8px;
     color: #ffd700;
     background-color: #000;
-    margin: 5px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .btn:hover {
     transform: scale(1.1);
     box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
 }
+
+#zoom-slider {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    height: 300px;
+    writing-mode: bt-lr;
+    -webkit-appearance: slider-vertical;
+}
+
 
 #menu {
     position: fixed;
@@ -70,31 +90,22 @@ body, html {
     width: 300px;
     height: 100%;
     display: none;
+    overflow-y: scroll; /* Allow scrolling */
 }
 
 #menu.active {
     display: block;
 }
 
-#filter-list {
-    display: flex;
-    flex-direction: column;
-}
-
-.scrollable {
-    max-height: 200px;
-    overflow-y: auto;
-}
-
 .filter-btn {
     padding: 10px;
-    margin: 5px;
+    margin: 5px 0;
     background-color: #333;
     color: #ffd700;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
     font-size: 14px;
+    cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
@@ -102,22 +113,82 @@ body, html {
     background-color: #555;
 }
 
-.custom-filter {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #222;
+/* General Styling for Scrollable Content */
+.scrollable {
+    max-height: 200px; /* Limit the height to trigger scrolling */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    padding-right: 10px; /* Ensure space for the scrollbar */
+    box-sizing: border-box; /* Include padding in dimensions */
 }
 
-.custom-filter h3 {
-    margin-bottom: 10px;
+/* Custom Scrollbar Styling */
+.scrollable::-webkit-scrollbar {
+    width: 10px; /* Width of the scrollbar */
+}
+
+.scrollable::-webkit-scrollbar-thumb {
+    background: #555; /* Dark scrollbar thumb */
+    border-radius: 5px; /* Rounded scrollbar */
+}
+
+.scrollable::-webkit-scrollbar-thumb:hover {
+    background: #777; /* Lighten on hover */
+}
+
+.scrollable::-webkit-scrollbar-track {
+    background: #222; /* Track background */
+    border-radius: 5px; /* Rounded track */
+}
+
+/* Ensure Parent Elements Allow Overflow */
+#menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    width: 300px;
+    height: 100%;
+    overflow-y: auto; /* Ensure menu scrolls */
+    z-index: 101;
+}
+
+#menu.active {
+    display: block;
+}
+
+body, html {
+    overflow: hidden; /* Prevent body scroll when menu is active */
+}
+
+:fullscreen #menu {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    max-height: 90%; /* Prevent overflow in fullscreen */
+    overflow-y: auto; /* Always enable scroll for menu */
+}
+
+/* Ensure Fullscreen Adjustments */
+:fullscreen #video-container {
+    overflow: hidden; /* Contain video */
+}
+
+@media (max-width: 768px) {
+    #menu {
+        width: 100%; /* Full-width menu on smaller screens */
+        height: auto;
+        overflow-y: auto; /* Ensure scroll on small devices */
+    }
+}
+
+.custom-filter {
+    margin-top: 20px;
+    background-color: #222;
+    padding: 15px;
 }
 
 .custom-filter label {
-    display: block;
     margin: 5px 0;
-}
-
-.custom-filter input {
-    width: 100%;
-    margin-bottom: 10px;
+    display: block;
 }
