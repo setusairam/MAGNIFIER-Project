@@ -1,18 +1,137 @@
-var videoElement = document.getElementById('video');
-var videoContainer = document.getElementById('video-container');
-var menu = document.getElementById('menu');
-var scale = 1;
-var maxScale = 5;
-var zoomStep = 0.2;
-var translateX = 0;
-var translateY = 0;
+const videoElement = document.getElementById('video');
+const videoContainer = document.getElementById('video-container');
+const menu = document.getElementById('menu');
+const zoomSlider = document.getElementById('zoom-slider');
 
-// Toggle the menu for filters
-function toggleMenu() {
-    menu.classList.toggle('active');
+let scale = 1; // Zoom scale
+let translateX = 0; // X-axis translation
+let translateY = 0; // Y-axis translation
+
+// Default values for custom filters
+const customFilters = {
+    hue: 0,
+    brightness: 100,
+    contrast: 100,
+    saturation: 100,
+};
+
+// Default filter (none)
+let currentFilter = 'none';
+
+let isDragging = false; // Track dragging state
+let startX = 0; // Initial X position on drag start
+let startY = 0; // Initial Y position on drag start
+
+// Add event listeners to enable drag panning
+videoContainer.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    startX = e.clientX; // Record the starting X position
+    startY = e.clientY; // Record the starting Y position
+    videoContainer.style.cursor = 'grabbing';
+});
+
+videoContainer.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        translateX += dx;
+        translateY += dy;
+
+        applyTransform(); // Apply transformations with constraints
+
+        startX = e.clientX;
+        startY = e.clientY;
+    }
+});
+
+videoContainer.addEventListener('mouseup', () => {
+    isDragging = false;
+    videoContainer.style.cursor = 'grab';
+});
+
+videoContainer.addEventListener('mouseleave', () => {
+    isDragging = false;
+    videoContainer.style.cursor = 'grab';
+});
+
+videoContainer.addEventListener('touchstart', (e) => {
+    isDragging = true;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+});
+
+videoContainer.addEventListener('touchmove', (e) => {
+    if (isDragging) {
+        const dx = e.touches[0].clientX - startX;
+        const dy = e.touches[0].clientY - startY;
+
+        translateX += dx;
+        translateY += dy;
+
+        applyTransform();
+
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    }
+});
+
+videoContainer.addEventListener('touchend', () => {
+    isDragging = false;
+});
+
+// Constrain movement within bounds
+function constrainMovement() {
+    const containerWidth = videoContainer.offsetWidth;
+    const containerHeight = videoContainer.offsetHeight;
+    const videoWidth = videoElement.offsetWidth * scale;
+    const videoHeight = videoElement.offsetHeight * scale;
+
+    // Determine the max translations to keep the video within bounds
+    const maxTranslateX = (videoWidth - containerWidth) / 2;
+    const maxTranslateY = (videoHeight - containerHeight) / 2;
+
+    // Constrain translateX and translateY within the calculated boundaries
+    translateX = Math.max(-maxTranslateX, Math.min(maxTranslateX, translateX));
+    translateY = Math.max(-maxTranslateY, Math.min(maxTranslateY, translateY));
 }
 
-// Access the user's camera
+// Apply transformations (zoom and pan)
+function applyTransform() {
+    constrainMovement(); // Ensure panning stays within bounds
+    videoElement.style.transform = `translate(-50%, -50%) translate(${translateX}px, ${translateY}px) scale(${scale})`;
+}
+
+// Zoom using the vertical slider
+function adjustZoom() {
+    scale = parseFloat(zoomSlider.value);
+    applyTransform();
+}
+
+// Combine Predefined and Adjustable Custom Filters
+function applyCombinedFilters() {
+    const predefinedFilter = currentFilter !== 'none' ? currentFilter : '';
+    const adjustableFilter = `hue-rotate(${customFilters.hue}deg) brightness(${customFilters.brightness}%) contrast(${customFilters.contrast}%) saturate(${customFilters.saturation}%)`;
+
+    videoElement.style.filter = `${predefinedFilter} ${adjustableFilter}`.trim();
+}
+
+// Adjustable Custom Filters
+function applyCustomFilter() {
+    customFilters.hue = document.getElementById('hue').value;
+    customFilters.brightness = document.getElementById('brightness').value;
+    customFilters.contrast = document.getElementById('contrast').value;
+    customFilters.saturation = document.getElementById('saturation').value;
+    applyCombinedFilters();
+}
+
+// Predefined Filters
+function applyFilter(filter) {
+    currentFilter = filter;
+    applyCombinedFilters();
+}
+
+// Access user's camera
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment' }
@@ -25,146 +144,96 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     console.error('getUserMedia is not supported in this browser');
 }
 
-function zoomIn() {
-    if (scale < maxScale) {
-        scale += zoomStep;
-        applyTransform();
+// Toggle fullscreen
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        videoContainer.requestFullscreen().catch((err) => {
+            console.error(`Error attempting to enable fullscreen mode: ${err.message}`);
+        });
+    } else {
+        document.exitFullscreen();
     }
 }
 
-function zoomOut() {
-    if (scale > 1) {
-        scale -= zoomStep;
-        if (scale < 1) scale = 1;
-        applyTransform();
-    }
-}
-
-function applyTransform() {
-    videoElement.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-}
-
-// Handle drag movement to move around when zoomed in
-videoContainer.addEventListener('mousedown', function (e) {
-    e.preventDefault();
-    videoContainer.style.cursor = 'grabbing';
-
-    let startX = e.clientX;
-    let startY = e.clientY;
-
-    function onMouseMove(e) {
-        translateX += (e.clientX - startX) / scale;
-        translateY += (e.clientY - startY) / scale;
-        startX = e.clientX;
-        startY = e.clientY;
-        applyTransform();
-    }
-
-    function onMouseUp() {
-        videoContainer.style.cursor = 'grab';
-        videoContainer.removeEventListener('mousemove', onMouseMove);
-        videoContainer.removeEventListener('mouseup', onMouseUp);
-    }
-
-    videoContainer.addEventListener('mousemove', onMouseMove);
-    videoContainer.addEventListener('mouseup', onMouseUp);
-});
-
-// Filters
+// Example predefined filters
 function applyNormal() {
-    videoElement.style.filter = 'none';
+    applyFilter('none');
 }
 
 function applyProtanopia() {
-    videoElement.style.filter = 'grayscale(100%) sepia(100%) hue-rotate(270deg)';
+    applyFilter('grayscale(100%) sepia(100%) hue-rotate(270deg)');
 }
 
 function applyDeuteranopia() {
-    videoElement.style.filter = 'grayscale(100%) sepia(100%) hue-rotate(90deg)';
+    applyFilter('grayscale(100%) sepia(100%) hue-rotate(90deg)');
+}
+
+function applyTritanopia() {
+    applyFilter('grayscale(100%) sepia(100%) hue-rotate(180deg)');
 }
 
 function applyLightBlue() {
-    videoElement.style.filter = 'brightness(150%) contrast(100%) sepia(20%) hue-rotate(180deg)';
+    applyFilter('brightness(150%) contrast(100%) sepia(20%) hue-rotate(180deg)');
 }
 
 function applyLightGreen() {
-    videoElement.style.filter = 'brightness(130%) saturate(200%) hue-rotate(100deg)';
+    applyFilter('brightness(130%) saturate(200%) hue-rotate(100deg)');
 }
 
 function applyLightPink() {
-    videoElement.style.filter = 'brightness(120%) contrast(100%) sepia(30%) hue-rotate(330deg)';
+    applyFilter('brightness(120%) contrast(100%) sepia(30%) hue-rotate(330deg)');
 }
 
 function applyLightYellow() {
-    videoElement.style.filter = 'brightness(140%) contrast(150%) hue-rotate(60deg)';
+    applyFilter('brightness(140%) contrast(150%) hue-rotate(60deg)');
 }
 
 function applyGrayscale() {
-    videoElement.style.filter = 'grayscale(100%)';
+    applyFilter('grayscale(100%)');
 }
 
 function applyInverted() {
-    videoElement.style.filter = 'invert(100%)';
+    applyFilter('invert(100%)');
 }
 
 function applyInvertedGrayscale() {
-    videoElement.style.filter = 'grayscale(100%) invert(100%)';
+    applyFilter('grayscale(100%) invert(100%)');
 }
 
 function applyYellowOnBlue() {
-    videoElement.style.filter = 'invert(100%) sepia(100%) hue-rotate(180deg) saturate(300%) brightness(50%)';
+    applyFilter('invert(100%) sepia(100%) hue-rotate(180deg) saturate(300%) brightness(50%)');
 }
 
 function applyBlueOnYellow() {
-    videoElement.style.filter = 'sepia(100%) hue-rotate(180deg) saturate(300%) brightness(50%)';
+    applyFilter('sepia(100%) hue-rotate(180deg) saturate(300%) brightness(50%)');
 }
 
 function applyNeonOrangeOnBlack() {
-    videoElement.style.filter = 'invert(100%) sepia(100%) saturate(500%) hue-rotate(330deg) brightness(50%) contrast(200%)';
+    applyFilter('invert(100%) sepia(100%) saturate(500%) hue-rotate(330deg) brightness(50%) contrast(200%)');
 }
 
 function applyNeonGreenOnBlack() {
-    videoElement.style.filter = 'invert(100%) sepia(100%) saturate(500%) hue-rotate(90deg) brightness(50%) contrast(200%)';
+    applyFilter('invert(100%) sepia(100%) saturate(500%) hue-rotate(90deg) brightness(50%) contrast(200%)');
 }
 
-// Custom Filter
-function applyCustomFilter() {
-    var hue = document.getElementById('hue').value;
-    var brightness = document.getElementById('brightness').value;
-    var contrast = document.getElementById('contrast').value;
-    var saturation = document.getElementById('saturation').value;
-
-    videoElement.style.filter = `hue-rotate(${hue}deg) brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`;
+function applyYellowOnBlack() {
+    applyFilter('invert(100%) brightness(80%) contrast(200%) sepia(100%) hue-rotate(60deg)');
 }
 
-function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-        requestFullscreen();
+function applyPurpleOnBlack() {
+    applyFilter('invert(100%) brightness(70%) contrast(200%) sepia(100%) hue-rotate(300deg)');
+}
+
+// Toggle the filter menu
+function toggleMenu() {
+    if (document.fullscreenElement) {
+        menu.style.position = 'absolute';
+        menu.style.top = '10px';
+        menu.style.right = '10px';
     } else {
-        exitFullscreen();
+        menu.style.position = 'fixed';
+        menu.style.top = '0';
+        menu.style.right = '0';
     }
-}
-
-function requestFullscreen() {
-    if (videoContainer.requestFullscreen) {
-        videoContainer.requestFullscreen();
-    } else if (videoContainer.mozRequestFullScreen) {
-        videoContainer.mozRequestFullScreen();
-    } else if (videoContainer.webkitRequestFullscreen) {
-        videoContainer.webkitRequestFullscreen();
-    } else if (videoContainer.msRequestFullscreen) {
-        videoContainer.msRequestFullscreen();
-    }
-}
-
-function exitFullscreen() {
-    if (document.exitFullscreen) {
-        document.exitFullscreen();
-    } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-    } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-    } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-    }
+    menu.classList.toggle('active');
 }
