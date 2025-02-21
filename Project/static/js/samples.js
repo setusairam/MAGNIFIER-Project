@@ -102,7 +102,7 @@ function applyTransform() {
     videoElement.style.transform = `translate(-50%, -50%) translate(${translateX}px, ${translateY}px) scale(${scale})`;
 }
 
-// Zoom using the vertical slider
+//Zoom using the vertical slider
 function adjustZoom() {
     scale = parseFloat(zoomSlider.value);
     applyTransform();
