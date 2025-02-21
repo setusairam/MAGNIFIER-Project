@@ -80,7 +80,6 @@ body, html {
     -webkit-appearance: slider-vertical;
 }
 
-
 #menu {
     position: fixed;
     top: 0;
@@ -97,21 +96,41 @@ body, html {
     display: block;
 }
 
+/* Custom Colors for Filter Buttons */
+.filter-btn:nth-child(1) { background-color: #3498db; color: white; } /* Normal */
+.filter-btn:nth-child(2) { background-color: #e74c3c; color: white; } /* Protanopia */
+.filter-btn:nth-child(3) { background-color: #2ecc71; color: white; } /* Deuteranopia */
+.filter-btn:nth-child(4) { background-color: #f1c40f; color: black; } /* Tritanopia */
+.filter-btn:nth-child(5) { background-color: #5dade2; color: white; } /* Light Blue */
+.filter-btn:nth-child(6) { background-color: #58d68d; color: white; } /* Light Green */
+.filter-btn:nth-child(7) { background-color: #ff85a2; color: white; } /* Light Pink */
+.filter-btn:nth-child(8) { background-color: #f7dc6f; color: black; } /* Light Yellow */
+.filter-btn:nth-child(9) { background-color: #7f8c8d; color: white; } /* Grayscale */
+.filter-btn:nth-child(10) { background-color: #34495e; color: white; } /* Inverted */
+.filter-btn:nth-child(11) { background-color: #2c3e50; color: white; } /* Inverted Grayscale */
+.filter-btn:nth-child(12) { background-color: #ffcc00; color: black; } /* Yellow on Blue */
+.filter-btn:nth-child(13) { background-color: #0033cc; color: white; } /* Blue on Yellow */
+.filter-btn:nth-child(14) { background-color: #ff6600; color: black; } /* Neon Orange on Black */
+.filter-btn:nth-child(15) { background-color: #00ff00; color: black; } /* Neon Green on Black */
+.filter-btn:nth-child(16) { background-color: #ffdd00; color: black; } /* Yellow on Black */
+.filter-btn:nth-child(17) { background-color: #800080; color: white; } /* Purple on Black */
+
 .filter-btn {
-    padding: 10px;
-    margin: 5px 0;
-    background-color: #333;
-    color: #ffd700;
-    border: none;
+    width: 120px; /* Adjust width as needed */
+    height: 70px; /* Adjust height as needed */
+    font-size: 16px; /* Increase font size for better visibility */
+    padding: 15px; /* Adjust padding for a better look */
     border-radius: 5px;
     font-size: 14px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .filter-btn:hover {
-    background-color: #555;
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
+
 
 /* General Styling for Scrollable Content */
 .scrollable {
